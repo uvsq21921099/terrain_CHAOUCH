@@ -1,5 +1,12 @@
 
-
+#groupe <MIASHS TD02>
+#David Daulasim
+#Gaetan Bres
+#Line-Sephora Assouan
+#Sede Saizonou
+#Souhaila Chaouch
+#Ramata Dia 
+#https://github.com/uvsq21921099/terrain_CHAOUCH/blob/main/terrain_CHAOUCH.py
 
 import tkinter as tk
 import random as rd
