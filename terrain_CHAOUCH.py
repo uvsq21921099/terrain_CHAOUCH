@@ -41,7 +41,6 @@ tableau = [[0 for x in range(nb_cases)] for y in range(nb_cases)]
 #######################
 # Variables globales
 liste = []
-cellule = []
 cpt = 0
 cptt = 0
 position = None
