@@ -123,7 +123,8 @@ def creer_peronnage(event):
                 carre1 =  canvas.create_rectangle((x1-rayon,y1-rayon),(x2,y2), fill = 'black', tags="perso")
     return position 
 
-def supp_perso(event):
+def supprimer_perso(event):
+    """permet de supprimer le personnage"""
     canvas.delete("perso")
 
 def deplacer_personnage(creer_peronnage):
@@ -190,7 +191,7 @@ grille()
 #change_couleur()
 
 canvas.bind("<1>", creer_peronnage)
-canvas.bind("<Double-1>", supp_perso)
+canvas.bind("<Double-1>", supprimer_perso)
 canvas.bind ('<KeyPress-Left>', deplacer_gauche)
 canvas.bind ('<Right>', deplacer_droite)
 canvas.bind ("<Up>", deplacer_haut)
