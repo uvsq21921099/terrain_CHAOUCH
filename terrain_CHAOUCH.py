@@ -1,22 +1,8 @@
-###################################################################
-# groupe <MIASHS TD02>
-# David Daulasim
-# Gaetan Bres
-# Line-Sephora Assouan
-# Sede Saizonou
-# Souhaila Chaouch
-# Ramata Dia 
-# https://github.com/uvsq21921099/terrain_CHAOUCH/blob/main/terrain_CHAOUCH.py
-#####################################################################
 
-########################
-# import des librairies:
+
 
 import tkinter as tk
 import random as rd
-import pickle
-
-
 
 
 
@@ -27,8 +13,6 @@ largeur = 500
 nb_cases = int(input("Entrez un nombre de cases pair copris entre 2 et 100"))
 cote = largeur // nb_cases
 T = 5
-
-
 n = 4
 nbcol =  largeur // cote
 nbligne = hauteur // cote
@@ -37,12 +21,11 @@ nombre_carre = nb_cases*nb_cases
  
 couleur = ["blue", "brown"]
 tableau = [[0 for x in range(nb_cases)] for y in range(nb_cases)]
-#GrilleTotal = [[0 for x in range(nb_cases)] for y in range(nb_cases)]
 #######################
 # Variables globales
 liste = []
 cpt = 0
-cptt = 0
+cppt = 0
 position = None
 
 ########################
@@ -114,13 +97,14 @@ def terrain_hasard():
 
 
 def creer_peronnage(event):
-    global cptt, cote, position
+    """permet de creer un personnage"""
+    global cppt, cote, position, carre1, dx, dy 
     x = event.x
     y = event.y
     dx, dy = cote, cote
     rayon = 2
-    cptt += 1
-    if cptt == 1:
+    cppt += 1
+    if cppt == 1:
         for i in range(0, largeur, cote):
             for j in range(0, hauteur, cote):
                 x1 = (x // cote)*cote+(cote/2)
@@ -129,51 +113,61 @@ def creer_peronnage(event):
                 x2 = x1 + rayon
                 y2 = y1 + rayon
                 position = [int(x//cote),int(y//cote)]
-                carre1 =  canvas.create_rectangle((x1-rayon,y1-rayon),(x2,y2), fill = 'black')
+                carre1 =  canvas.create_rectangle((x1-rayon,y1-rayon),(x2,y2), fill = 'black', tags="perso")
     return position 
-    
-def deplacer_droite():
+
+def supp_perso(event):
+    canvas.delete("perso")
+
+def deplacer_personnage(creer_peronnage):
+    """permet de deplacer le personnage"""
+    global dep, dx, dy
+    creer_peronnage.canvas.move(position, dx, dy)
+    creer_peronnage.canvas.after(100, creer_peronnage.deplacer_personnage)
+
+def deplacer_gauche(creer_peronnage, event):
+    """permet de deplacer le personnage vers la gauche"""
+    global dx, dy
+    print(event.keysym)
+    creer_peronnage.dx = -1
+    creer_peronnage.dy = 0
+    print("2")
+   
+
+def deplacer_droite(creer_peronnage, event):
     """permet de deplacer le personnage vers la droite"""
-    global carre1
-    position  = creer_peronnage()
-    if position[0]+1<nb_cases and tableau[position[0]+1][position[1]] == 'brown' :
-        canvas.move(carre1, cote, 0)
-        position[0]+=1
-
-
-def deplacer_gauche():
-    """permet de deplacer le personnage vers le gauche"""
-    if position[0]-1>=0 and tableau[position[0]-1][position[1]] == 'brown' :
-        canvas.move(carre1, -cote, 0)
-        position[0]-=1
-def deplacer_haut():
+    global dx, dy
+    print(event.keysym)
+    creer_peronnage.dx = -1
+    creer_peronnage.dy = 0
+    print("2")
+    
+ 
+def deplacer_haut(event):
     """permet de deplacer le personnage vers le haut"""
-    if position[1]-1>=0 and tableau[position[0]][position[1]-1] == 'brown' :
-        canvas.move(carre1, 0, -cote)
-        position[1]-=1
-def deplacer_bas():
+    global dy, dx
+    dy = -1 
+    dx = 0 
+    
+ 
+def deplacer_bas(event):
     """permet de deplacer le personnage vers le bas"""
-    if position[1]+1<nb_cases and tableau[position[0]][position[1]+1] == 'brown' :
-        canvas.move(carre1, 0, cote)
-        position[1]+=1
+    global dy, dx
+    dy = 1 
+    dx = 0
 
-
-def sauvegarde() : #Sauvegarde les données
-    fic = open("sauvegarde_terrain","w" )
-    for h in saveList :
-        pickle.dump(h.letatdelagrille)
-        pickle.dump(h.lepersonnage)
-    fic.close()
-
-def recharge(): #récupérer le terrain sauvegarder
-    pickle.dump(saveList)
-    fic = open("sauvegarde_terrain","r")
-    saveList = pickle.load()
-    fic.close()
-    
 
     
-######################
+def sauvegarder():
+    """permet de sauvegarder le terrain dans un fichier"""
+    with open('Sauvegarde.txt', 'w') as filehandle:
+        for j in range(nbligne):
+            for i in range(nbcol):
+                filehandle.write(str(tableau[i][j]) + "\n")
+        filehandle.close()
+
+
+####################
 # programme principal:
 
 racine = tk.Tk()
@@ -183,21 +177,24 @@ racine.title('terrain_CHAOUCH')
 
 canvas = tk.Canvas(racine, width = largeur, height = hauteur, bg="white")
 boutton = tk.Button(racine, text = 'generer', command =  terrain_hasard)
+boutton_sauv = tk.Button(racine, text = 'sauvegarder', command = sauvegarder )
+
 grille()
 #change_couleur()
 
 canvas.bind("<1>", creer_peronnage)
-
-canvas.bind("<Right>", deplacer_droite)
-canvas.bind("<Left>", deplacer_gauche)
-canvas.bind("<Up>", deplacer_haut)
-canvas.bind("<Down>", deplacer_bas)
+canvas.bind("<Double-1>", supp_perso)
+canvas.bind ('<KeyPress-Left>', deplacer_gauche)
+canvas.bind ('<Right>', deplacer_droite)
+canvas.bind ("<Up>", deplacer_haut)
+canvas.bind ("<Down>", deplacer_bas)
 
 ########################
 # placement des widgets:
 
 boutton.grid(column =0 ,row = 1)
 canvas.grid(column =0 ,row = 0)
+boutton_sauv.grid(column =0, row = 2)
 
 #####################
 # boucle principale:
